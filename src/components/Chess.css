@@ -1,0 +1,21 @@
+.board {
+  height: 40em;
+  width: 40em;
+  white-space: nowrap;
+  column-count: 8;
+  column-gap: 0px;
+}
+
+.tile {
+  width: 1em;
+  height: 1em;
+  background: beige;
+  font-size: 5em;
+  text-align: center;
+  vertical-align: middle;
+  font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
+}
+
+.tile.black {
+  background: grey;
+}
