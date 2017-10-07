@@ -1,5 +1,8 @@
 import * as React from 'react';
 import * as ReactDOM from 'react-dom';
+
+// import * as pieces from './constants/pieces';
+
 // // import App from './App';
 // import Hello from './components/Hello';
 // import registerServiceWorker from './registerServiceWorker';
@@ -31,33 +34,6 @@ import * as ReactDOM from 'react-dom';
 // );
 
 // Chess
-import { Chess, BoardState } from './components/Chess';
-var boardState: BoardState = [];
-for (var column: number = 0; column < 8; column++) {
-  boardState[column] = [];
-  for (var row: number = 0; row < 8; row++) {
-    boardState[column][row] = {
-      column: column,
-      row: row,
-      isWhite: false,
-      piece: ''
-    };
-  }
-}
+import { Chess } from './components/Chess';
 
-for (column = 0; column < 8; column++) {
-  boardState[column][1] = {
-    ...boardState[column][1],
-    isWhite: false,
-    piece: 'P'
-  };
-  boardState[column][6] = {
-    ...boardState[column][6],
-    isWhite: true,
-    piece: 'P'
-  };
-}
-
-ReactDOM.render(<Chess {...boardState} />, document.getElementById(
-  'root'
-) as HTMLElement);
+ReactDOM.render(<Chess />, document.getElementById('root') as HTMLElement);

@@ -19,3 +19,7 @@
 .tile.black {
   background: grey;
 }
+
+.tile span {
+  cursor: pointer;
+}
