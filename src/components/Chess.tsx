@@ -4,6 +4,7 @@ import * as React from 'react';
 import './Chess.css';
 import * as pieces from '../constants/pieces';
 import { BoardState, TileProps } from '../types/BoardState';
+import { MoveFromTo } from '../actions/index';
 
 export interface Props {
   boardState: BoardState;
@@ -22,8 +23,10 @@ export interface Props {
 */
 
 export interface DisplayTileProps extends TileProps {
-  onMoveToHere?: () => void;
+  onMoveToHere: (m: MoveFromTo) => void;
   isBgWhite: boolean;
+  column: number;
+  row: number;
 }
 
 // [columns][rows]
@@ -55,7 +58,17 @@ export function Tile(tileprops: DisplayTileProps) {
       <span
         draggable={true}
         onDragStart={event => {
-          event.dataTransfer.setData('text', 'x');
+          event.dataTransfer.setData('fromRow', tileprops.row + '');
+          event.dataTransfer.setData('fromColumn', tileprops.column + '');
+        }}
+        onDrop={event => {
+          var m: MoveFromTo = {
+            fromRow: Number(event.dataTransfer.getData('fromRow')),
+            fromColumn: Number(event.dataTransfer.getData('fromColumn')),
+            toRow: tileprops.row,
+            toColumn: tileprops.column
+          };
+          tileprops.onMoveToHere(m);
         }}
       >
         {pieceToUnicodeChar(tileprops.piece, tileprops.isWhite)}
@@ -64,15 +77,18 @@ export function Tile(tileprops: DisplayTileProps) {
   );
 }
 
-export function Board(boardState: BoardState) {
+export function Board(props: Props) {
   //   throw new Error('This is how i can throw an error');
   var tiles: {}[][] = [];
   for (var column: number = 0; column < 8; column++) {
     for (var row: number = 0; row < 8; row++) {
       if (tiles[column] === undefined) tiles[column] = [];
       var tile: DisplayTileProps = {
-        ...boardState[column][row],
-        isBgWhite: (column + row) % 2 === 1
+        ...props.boardState[column][row],
+        isBgWhite: (column + row) % 2 === 1,
+        onMoveToHere: props.onTryMove,
+        column,
+        row
       };
       tiles[column][7 - row] = <Tile {...tile} />;
     }
@@ -82,6 +98,6 @@ export function Board(boardState: BoardState) {
 
 export class Chess extends React.Component<Props, object> {
   render() {
-    return Board(this.props.boardState as BoardState);
+    return Board(this.props as Props);
   }
 }

@@ -1,7 +1,15 @@
 import * as constants from '../constants/actions';
 
+export interface MoveFromTo {
+  fromColumn: number;
+  fromRow: number;
+  toColumn: number;
+  toRow: number;
+}
+
 export interface TryMove {
   type: constants.TRY_MOVE;
+  payload: MoveFromTo;
 }
 
 export interface Move {
@@ -13,10 +21,10 @@ export interface MoveFail {
 }
 
 export type MoveAction = TryMove | Move | MoveFail;
-
-export function TryMove(): TryMove {
+export function TryMove(m: MoveFromTo): TryMove {
   return {
-    type: constants.TRY_MOVE
+    type: constants.TRY_MOVE,
+    payload: m
   };
 }
 

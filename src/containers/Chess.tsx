@@ -13,7 +13,7 @@ export function mapStateToProps({ boardState }: StorageState) {
 
 export function mapDispatchToProps(dispatch: Dispatch<actions.MoveAction>) {
   return {
-    onTryMove: () => dispatch(actions.TryMove())
+    onTryMove: (m: actions.MoveFromTo) => dispatch(actions.TryMove(m))
   };
 }
 
