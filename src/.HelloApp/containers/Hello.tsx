@@ -6,14 +6,16 @@ import { connect, Dispatch } from 'react-redux';
 export function mapStateToProps({ enthusiasmLevel, languageName }: StoreState) {
   return {
     enthusiasmLevel,
-    name: languageName,
+    name: languageName
   };
 }
 
-export function mapDispatchToProps(dispatch: Dispatch<actions.EnthusiasmAction>) {
+export function mapDispatchToProps(
+  dispatch: Dispatch<actions.EnthusiasmAction>
+) {
   return {
     onIncrement: () => dispatch(actions.IncrementEnthusiasm()),
-    onDecrement: () => dispatch(actions.DecrementEnthusiasm()),
+    onDecrement: () => dispatch(actions.DecrementEnthusiasm())
   };
 }
 

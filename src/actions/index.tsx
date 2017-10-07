@@ -1,26 +1,33 @@
-import * as constants from '../constants';
+import * as constants from '../constants/actions';
 
-export interface IncrementEnthusiasm {
-    type: constants.INCREMENT_ENTHUSIASM;
+export interface TryMove {
+  type: constants.TRY_MOVE;
 }
 
-export interface DecrementEnthusiasm {
-    type: constants.DECREMENT_ENTHUSIASM;
+export interface Move {
+  type: constants.MOVE;
 }
 
-export type EnthusiasmAction = IncrementEnthusiasm | DecrementEnthusiasm;
-
-var numberTwo: EnthusiasmAction = {type: constants.DECREMENT_ENTHUSIASM};
-numberTwo = numberTwo;
-
-export function IncrementEnthusiasm(): IncrementEnthusiasm {
-    return {
-        type: constants.INCREMENT_ENTHUSIASM
-    };
+export interface MoveFail {
+  type: constants.MOVE_FAIL;
 }
 
-export function DecrementEnthusiasm(): DecrementEnthusiasm {
-    return {
-        type: constants.DECREMENT_ENTHUSIASM
-    };
+export type MoveAction = TryMove | Move | MoveFail;
+
+export function TryMove(): TryMove {
+  return {
+    type: constants.TRY_MOVE
+  };
+}
+
+export function Move(): Move {
+  return {
+    type: constants.MOVE
+  };
+}
+
+export function MoveFail(): MoveFail {
+  return {
+    type: constants.MOVE_FAIL
+  };
 }

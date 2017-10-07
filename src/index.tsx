@@ -34,6 +34,20 @@ import * as ReactDOM from 'react-dom';
 // );
 
 // Chess
-import { Chess } from './components/Chess';
+import { createStore } from 'redux';
+import { Provider } from 'react-redux';
 
-ReactDOM.render(<Chess />, document.getElementById('root') as HTMLElement);
+import { BoardState } from './types/BoardState';
+import { StorageState } from './types/StorageState';
+import { move } from './reducers/index';
+import { Chess, buildStartBoard } from './containers/Chess';
+
+const boardState: BoardState = buildStartBoard();
+const store = createStore<StorageState>(move, { boardState });
+
+ReactDOM.render(
+  <Provider store={store}>
+    <Chess />
+  </Provider>,
+  document.getElementById('root') as HTMLElement
+);

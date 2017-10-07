@@ -3,12 +3,11 @@
 import * as React from 'react';
 import './Chess.css';
 import * as pieces from '../constants/pieces';
+import { BoardState, TileProps } from '../types/BoardState';
 
 export interface Props {
-  name: string;
-  enthusiasmLevel?: number;
-  onIncrement?: () => void;
-  onDecrement?: () => void;
+  boardState: BoardState;
+  onTryMove: () => void;
 }
 
 /* 
@@ -22,20 +21,12 @@ export interface Props {
   K: king
 */
 
-export interface TileProps {
-  // column: number;
-  // row: number;
-  piece: string;
-  isWhite: boolean;
-  onMoveToHere?: () => void;
-}
-
 export interface DisplayTileProps extends TileProps {
+  onMoveToHere?: () => void;
   isBgWhite: boolean;
 }
 
 // [columns][rows]
-export type BoardState = TileProps[][];
 
 // https://en.wikipedia.org/wiki/Chess_symbols_in_Unicode
 function pieceToUnicodeChar(piece: string, isWhite: boolean): string {
@@ -89,55 +80,8 @@ export function Board(boardState: BoardState) {
   return <div className="board">{tiles}</div>;
 }
 
-export class Chess extends React.Component<any, object> {
+export class Chess extends React.Component<Props, object> {
   render() {
-    var boardState: BoardState = _buildStartBoard();
-    return Board(boardState);
+    return Board(this.props.boardState as BoardState);
   }
-}
-
-function _buildStartBoard(): BoardState {
-  var boardState: BoardState;
-  boardState = [];
-  for (var column: number = 2; column < 6; column++) {
-    boardState[column] = [];
-    for (var row: number = 2; row < 6; row++) {
-      boardState[column][row] = {
-        isWhite: false,
-        piece: ''
-      };
-    }
-  }
-  for (column = 0; column < 8; column++) {
-    _putpiece(column, 1, pieces.PAWN, boardState);
-  }
-  _putpiece(0, 0, pieces.ROOK, boardState);
-  _putpiece(1, 0, pieces.KNIGHT, boardState);
-  _putpiece(2, 0, pieces.BISHOP, boardState);
-  _putpiece(3, 0, pieces.QUEEN, boardState);
-  _putpiece(4, 0, pieces.KING, boardState);
-  _putpiece(5, 0, pieces.BISHOP, boardState);
-  _putpiece(6, 0, pieces.KNIGHT, boardState);
-  _putpiece(7, 0, pieces.ROOK, boardState);
-  return boardState;
-}
-
-function _putpiece(
-  column: number,
-  row: number,
-  piece: pieces.PIECE,
-  boardState: BoardState
-): void {
-  if (boardState[column] === undefined) boardState[column] = [];
-  boardState[column][row] = {
-    isWhite: true,
-    piece: piece
-  };
-  column = 7 - column;
-  row = 7 - row;
-  if (boardState[column] === undefined) boardState[column] = [];
-  boardState[column][row] = {
-    isWhite: false,
-    piece: piece
-  };
 }
