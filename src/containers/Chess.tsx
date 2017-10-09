@@ -24,7 +24,7 @@ export var Chess = connect(mapStateToProps, mapDispatchToProps)(ChessComponent a
 export function buildStartBoard(): BoardState {
   var boardState: BoardState;
   boardState = [];
-  for (var column: number = 2; column < 6; column++) {
+  for (var column: number = 0; column < 8; column++) {
     boardState[column] = [];
     for (var row: number = 2; row < 6; row++) {
       boardState[column][row] = {

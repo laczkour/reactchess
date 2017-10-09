@@ -20,9 +20,8 @@ export interface MoveFail {
   type: constants.MOVE_FAIL;
 }
 
-export type MoveAction = TryMove | Move | MoveFail;
+export type MoveAction = TryMove;
 export function TryMove(m: MoveFromTo): TryMove {
-  console.log('action TryMove');
   return {
     type: constants.TRY_MOVE,
     payload: m

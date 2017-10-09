@@ -60,24 +60,20 @@ export function Tile(tileprops: DisplayTileProps) {
         event.preventDefault();
       }}
       onDrop={event => {
-        console.log('drop 1');
         var m: MoveFromTo = {
           fromRow: Number(event.dataTransfer.getData('fromRow')),
           fromColumn: Number(event.dataTransfer.getData('fromColumn')),
           toRow: tileprops.row,
           toColumn: tileprops.column
         };
-        console.log('drop 2');
         tileprops.onMoveToHere(m);
       }}
     >
       <span
         draggable={true}
         onDragStart={event => {
-          console.log('dragstart 1');
           event.dataTransfer.setData('fromRow', tileprops.row + '');
           event.dataTransfer.setData('fromColumn', tileprops.column + '');
-          console.log('dragstart 2');
         }}
       >
         {pieceToUnicodeChar(tileprops.piece, tileprops.isWhite)}
@@ -102,15 +98,20 @@ export function Board(props: Props) {
         column,
         row: dispRow
       };
-      tiles[column] = <Tile {...tile} />;
+      tiles[column] = <Tile key={column + '_' + row} {...tile} />;
     }
-    rows.push(<tr>{tiles}</tr>);
+    rows.push(<tr key={row}>{tiles}</tr>);
   }
-  return <table className="board">{rows}</table>;
+  return (
+    <table className="board">
+      <tbody>{rows}</tbody>
+    </table>
+  );
 }
 
 export class Chess extends React.Component<Props, object> {
   render() {
-    return Board(this.props as Props);
+    return <Board {...this.props} />;
+    // return Board(this.props as Props);
   }
 }

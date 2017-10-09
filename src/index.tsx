@@ -43,8 +43,17 @@ import { move } from './reducers/index';
 import { Chess, buildStartBoard } from './containers/Chess';
 
 const boardState: BoardState = buildStartBoard();
-const store = createStore<StorageState>(move, { boardState });
-console.log('start');
+const store = createStore<StorageState>(move, {
+  boardState,
+  nextIsWhite: true,
+  history: [boardState],
+  moveHistory: [],
+  isCheck: false,
+  isCheckMate: false,
+  isStaleMate: false,
+  isBlackKingMoved: false,
+  isWhiteKingMoved: false
+});
 ReactDOM.render(
   <Provider store={store}>
     <Chess />

@@ -1,5 +1,14 @@
-import {BoardState} from './BoardState'
+import { BoardState } from './BoardState';
+import { MoveFromTo } from '../actions/index';
 
 export interface StorageState {
   boardState: BoardState;
+  history: BoardState[];
+  moveHistory: MoveFromTo[];
+  nextIsWhite: boolean;
+  isCheck: boolean;
+  isCheckMate: boolean;
+  isStaleMate: boolean;
+  isWhiteKingMoved: boolean;
+  isBlackKingMoved: boolean;
 }
