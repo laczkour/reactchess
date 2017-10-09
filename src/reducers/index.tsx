@@ -15,7 +15,7 @@ export function move(state: StorageState, action: actions.MoveAction): StorageSt
         return {
           ...state,
           boardState: boardState as BoardState,
-          nextIsWhite: !state.nextIsWhite,
+          isWhiteNext: !state.isWhiteNext,
           history,
           moveHistory
         };
@@ -48,7 +48,7 @@ class ValidMoveChecker {
   moveIfValid(): ValidMoveReturn {
     this.fromTile = this.state.boardState[this.moveFromTo.fromColumn][this.moveFromTo.fromRow];
     this.valid = true;
-    if (this.state.nextIsWhite !== this.fromTile.isWhite) return { valid: false };
+    if (this.state.isWhiteNext !== this.fromTile.isWhite) return { valid: false };
     if (this.moveFromTo.fromColumn === this.moveFromTo.toColumn && this.moveFromTo.toRow === this.moveFromTo.fromRow) {
       return { valid: false };
     }

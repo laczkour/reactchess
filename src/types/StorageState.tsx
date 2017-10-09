@@ -5,7 +5,7 @@ export interface StorageState {
   boardState: BoardState;
   history: BoardState[];
   moveHistory: MoveFromTo[];
-  nextIsWhite: boolean;
+  isWhiteNext: boolean;
   isCheck: boolean;
   isCheckMate: boolean;
   isStaleMate: boolean;

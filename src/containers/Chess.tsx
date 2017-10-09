@@ -5,9 +5,9 @@ import { BoardState, TileProps } from '../types/BoardState';
 import * as pieces from '../constants/pieces';
 import { connect, Dispatch } from 'react-redux';
 
-export function mapStateToProps({ boardState }: StorageState) {
+export function mapStateToProps(storageState: StorageState) {
   return {
-    boardState
+    ...storageState
   };
 }
 

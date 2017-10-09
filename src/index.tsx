@@ -45,7 +45,7 @@ import { Chess, buildStartBoard } from './containers/Chess';
 const boardState: BoardState = buildStartBoard();
 const store = createStore<StorageState>(move, {
   boardState,
-  nextIsWhite: true,
+  isWhiteNext: true,
   history: [boardState],
   moveHistory: [],
   isCheck: false,

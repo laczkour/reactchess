@@ -11,6 +11,14 @@ export interface Props {
   onTryMove: () => void;
 }
 
+export interface ChessProps {
+  boardState: BoardState;
+  isWhiteNext: boolean;
+  onTryMove: () => void;
+
+  moveHistory: MoveFromTo[];
+}
+
 /* 
   pieces:
   0: nothing
@@ -100,8 +108,27 @@ export function Board(props: Props) {
       };
       tiles[column] = <Tile key={column + '_' + row} {...tile} />;
     }
-    rows.push(<tr key={row}>{tiles}</tr>);
+    // var chr = String.fromCharCode(65 + 7 - row);
+    rows.push(
+      <tr key={row}>
+        <th>{8 - row}</th>
+        {tiles}
+      </tr>
+    );
   }
+  rows.push(
+    <tr>
+      <th />
+      <th>A</th>
+      <th>B</th>
+      <th>C</th>
+      <th>D</th>
+      <th>E</th>
+      <th>F</th>
+      <th>G</th>
+      <th>H</th>
+    </tr>
+  );
   return (
     <table className="board">
       <tbody>{rows}</tbody>
@@ -109,9 +136,21 @@ export function Board(props: Props) {
   );
 }
 
-export class Chess extends React.Component<Props, object> {
+export class Chess extends React.Component<ChessProps, object> {
   render() {
-    return <Board {...this.props} />;
+    var whoisnext = this.props.isWhiteNext ? 'White is next' : 'Black is next';
+    var lis: {}[] = [];
+    var getChr = (row: number) => String.fromCharCode(65 + 7 - row);
+    this.props.moveHistory.forEach(element => {
+      lis.push(<li>{getChr(element.fromColumn) + element.fromRow + getChr(element.toColumn) + element.toRow} </li>);
+    });
+    return (
+      <div>
+        <Board {...this.props} />
+        <span>{whoisnext}</span>
+        <ol>{lis}</ol>
+      </div>
+    );
     // return Board(this.props as Props);
   }
 }
