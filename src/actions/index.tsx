@@ -22,6 +22,7 @@ export interface MoveFail {
 
 export type MoveAction = TryMove | Move | MoveFail;
 export function TryMove(m: MoveFromTo): TryMove {
+  console.log('action TryMove');
   return {
     type: constants.TRY_MOVE,
     payload: m

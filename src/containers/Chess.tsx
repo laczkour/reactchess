@@ -17,10 +17,7 @@ export function mapDispatchToProps(dispatch: Dispatch<actions.MoveAction>) {
   };
 }
 
-export var Chess = connect(
-  mapStateToProps,
-  mapDispatchToProps
-)(ChessComponent as any);
+export var Chess = connect(mapStateToProps, mapDispatchToProps)(ChessComponent as any);
 
 /* ------------------------------------------------------------------------ */
 
@@ -53,12 +50,7 @@ export function buildStartBoard(): BoardState {
   return boardState;
 }
 
-function _putpiece(
-  column: number,
-  row: number,
-  piece: pieces.PIECE,
-  boardState: BoardState
-): void {
+function _putpiece(column: number, row: number, piece: pieces.PIECE, boardState: BoardState): void {
   if (boardState[column] === undefined) boardState[column] = [];
   boardState[column][row] = {
     isWhite: true,

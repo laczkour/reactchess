@@ -54,46 +54,59 @@ function pieceToUnicodeChar(piece: string, isWhite: boolean): string {
 export function Tile(tileprops: DisplayTileProps) {
   var classNameString: string = tileprops.isBgWhite ? 'tile' : 'black tile';
   return (
-    <div className={classNameString}>
+    <td
+      className={classNameString}
+      onDragOver={event => {
+        event.preventDefault();
+      }}
+      onDrop={event => {
+        console.log('drop 1');
+        var m: MoveFromTo = {
+          fromRow: Number(event.dataTransfer.getData('fromRow')),
+          fromColumn: Number(event.dataTransfer.getData('fromColumn')),
+          toRow: tileprops.row,
+          toColumn: tileprops.column
+        };
+        console.log('drop 2');
+        tileprops.onMoveToHere(m);
+      }}
+    >
       <span
         draggable={true}
         onDragStart={event => {
+          console.log('dragstart 1');
           event.dataTransfer.setData('fromRow', tileprops.row + '');
           event.dataTransfer.setData('fromColumn', tileprops.column + '');
-        }}
-        onDrop={event => {
-          var m: MoveFromTo = {
-            fromRow: Number(event.dataTransfer.getData('fromRow')),
-            fromColumn: Number(event.dataTransfer.getData('fromColumn')),
-            toRow: tileprops.row,
-            toColumn: tileprops.column
-          };
-          tileprops.onMoveToHere(m);
+          console.log('dragstart 2');
         }}
       >
         {pieceToUnicodeChar(tileprops.piece, tileprops.isWhite)}
       </span>
-    </div>
+    </td>
   );
 }
 
 export function Board(props: Props) {
   //   throw new Error('This is how i can throw an error');
-  var tiles: {}[][] = [];
-  for (var column: number = 0; column < 8; column++) {
-    for (var row: number = 0; row < 8; row++) {
+  var tiles: {}[] = [];
+  var rows: {}[] = [];
+  for (var row: number = 0; row < 8; row++) {
+    tiles = [];
+    for (var column: number = 0; column < 8; column++) {
       if (tiles[column] === undefined) tiles[column] = [];
+      var dispRow: number = 7 - row;
       var tile: DisplayTileProps = {
-        ...props.boardState[column][row],
-        isBgWhite: (column + row) % 2 === 1,
+        ...props.boardState[column][dispRow],
+        isBgWhite: (column + dispRow) % 2 === 1,
         onMoveToHere: props.onTryMove,
         column,
-        row
+        row: dispRow
       };
-      tiles[column][7 - row] = <Tile {...tile} />;
+      tiles[column] = <Tile {...tile} />;
     }
+    rows.push(<tr>{tiles}</tr>);
   }
-  return <div className="board">{tiles}</div>;
+  return <table className="board">{rows}</table>;
 }
 
 export class Chess extends React.Component<Props, object> {

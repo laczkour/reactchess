@@ -44,7 +44,7 @@ import { Chess, buildStartBoard } from './containers/Chess';
 
 const boardState: BoardState = buildStartBoard();
 const store = createStore<StorageState>(move, { boardState });
-
+console.log('start');
 ReactDOM.render(
   <Provider store={store}>
     <Chess />

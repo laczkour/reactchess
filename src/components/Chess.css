@@ -1,9 +1,16 @@
 .board {
-  height: 40em;
-  width: 40em;
+  /*height: 40em;
+  width: 40em;*/
   white-space: nowrap;
   column-count: 8;
   column-gap: 0px;
+  border: 0px;
+  border-collapse: collapse;
+}
+
+.board td {
+  width: 1.2em;
+  height: 1.2em;
 }
 
 .tile {
@@ -12,7 +19,7 @@
   background: beige;
   font-size: 5em;
   text-align: center;
-  vertical-align: middle;
+  vertical-align: top;
   font-family: 'Franklin Gothic Medium', 'Arial Narrow', Arial, sans-serif;
 }
 
@@ -21,5 +28,10 @@
 }
 
 .tile span {
+  position: relative;
+  /* top: -0.1em; */
+  line-height: 1.25em;
+  font-size: 0.8em;
   cursor: pointer;
+  display: inline-block;
 }

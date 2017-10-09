@@ -1,10 +1,23 @@
 import { StorageState } from '../types/StorageState';
 import * as actions from '../actions/index';
+import * as constants from '../constants/actions';
 
 export function move(state: StorageState, action: actions.MoveAction): StorageState {
-  switch(action.type) {
-    case actions.TryMove: {
-      if ()
+  console.log('move reducer');
+  switch (action.type) {
+    case constants.TRY_MOVE: {
+      if (_isValidMove(state, action)) {
+        console.log('move reducer valid');
+        var { fromColumn, fromRow, toColumn, toRow } = action.payload;
+        var boardState = { ...state.boardState };
+        boardState[toColumn][toRow] = { ...boardState[fromColumn][fromRow] };
+        boardState[fromColumn][fromRow].piece = '';
+        return { ...state, boardState };
+      }
+      return state;
+    }
+    default: {
+      return state;
     }
   }
   // switch (action.type) {
@@ -15,7 +28,7 @@ export function move(state: StorageState, action: actions.MoveAction): StorageSt
   //   default:
   //     return state;
   // }
-  return state;
+  // return state;
 }
 
 function _isValidMove(state: StorageState, action: actions.MoveAction): boolean {
