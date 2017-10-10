@@ -9,6 +9,4 @@ export interface StorageState {
   isCheck: boolean;
   isCheckMate: boolean;
   isStaleMate: boolean;
-  isWhiteKingMoved: boolean;
-  isBlackKingMoved: boolean;
 }

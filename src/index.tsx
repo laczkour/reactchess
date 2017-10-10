@@ -50,9 +50,7 @@ const store = createStore<StorageState>(move, {
   moveHistory: [],
   isCheck: false,
   isCheckMate: false,
-  isStaleMate: false,
-  isBlackKingMoved: false,
-  isWhiteKingMoved: false
+  isStaleMate: false
 });
 ReactDOM.render(
   <Provider store={store}>

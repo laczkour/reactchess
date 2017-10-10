@@ -7,7 +7,12 @@ import { TileProps, BoardState } from '../types/BoardState';
 export function move(state: StorageState, action: actions.MoveAction): StorageState {
   switch (action.type) {
     case constants.TRY_MOVE: {
-      var validMoveChecker = new ValidMoveChecker(state, action.payload);
+      var validMoveChecker = new ValidMoveChecker({
+        boardState: state.boardState,
+        isWhiteNext: state.isWhiteNext,
+        moveHistory: state.moveHistory,
+        moveFromTo: action.payload
+      });
       const { valid, boardState } = validMoveChecker.moveIfValid();
       if (valid) {
         var history = [...state.history, state.boardState];
@@ -32,23 +37,39 @@ interface ValidMoveReturn {
   boardState?: BoardState;
   valid: boolean;
 }
+interface IsContinousMoveValidParam {
+  isPawnForward: boolean;
+  isKingCastling: boolean;
+}
+interface ValidMoveCheckerProps {
+  boardState: BoardState;
+  moveFromTo: actions.MoveFromTo;
+  isWhiteNext: boolean;
+  moveHistory: actions.MoveFromTo[];
+}
 
-class ValidMoveChecker {
-  state: StorageState;
+export class ValidMoveChecker {
+  // state: StorageState;
+  boardState: BoardState;
   moveFromTo: actions.MoveFromTo;
   valid: boolean;
   fromTile: TileProps;
   newBoardState: BoardState;
+  isWhiteNext: boolean;
+  moveHistory: actions.MoveFromTo[];
 
-  constructor(state: StorageState, moveFromTo: actions.MoveFromTo) {
-    this.state = state;
-    this.moveFromTo = moveFromTo;
+  constructor(props: ValidMoveCheckerProps) {
+    this.boardState = props.boardState;
+    this.isWhiteNext = props.isWhiteNext;
+    this.moveHistory = props.moveHistory;
+    // this.state = state;
+    this.moveFromTo = props.moveFromTo;
   }
 
   moveIfValid(): ValidMoveReturn {
-    this.fromTile = this.state.boardState[this.moveFromTo.fromColumn][this.moveFromTo.fromRow];
+    this.fromTile = this.boardState[this.moveFromTo.fromColumn][this.moveFromTo.fromRow];
     this.valid = true;
-    if (this.state.isWhiteNext !== this.fromTile.isWhite) return { valid: false };
+    if (this.isWhiteNext !== this.fromTile.isWhite) return { valid: false };
     if (this.moveFromTo.fromColumn === this.moveFromTo.toColumn && this.moveFromTo.toRow === this.moveFromTo.fromRow) {
       return { valid: false };
     }
@@ -106,7 +127,7 @@ class ValidMoveChecker {
     if (rowDifference === 2 && columnDifference === 0) {
       if (this.moveFromTo.fromRow !== (this.fromTile.isWhite ? 1 : 6)) return false;
       if (columnDifference !== 0) return false;
-      if (this.isContinousMoveValid(true)) {
+      if (this.isContinousMoveValid({ isPawnForward: true, isKingCastling: false })) {
         this.createCommonNewBoardState();
         return true;
       } else {
@@ -116,16 +137,16 @@ class ValidMoveChecker {
 
     // Capture
     if (rowDifference === 1 && Math.abs(columnDifference) === 1) {
-      const toTile = this.state.boardState[this.moveFromTo.toColumn][this.moveFromTo.toRow];
+      const toTile = this.boardState[this.moveFromTo.toColumn][this.moveFromTo.toRow];
       if (toTile.isWhite !== this.fromTile.isWhite && toTile.piece !== '') {
         this.createCommonNewBoardState();
         return true;
       }
       // En Passe? need to know the previous move to check correctly FIXME
-      const toEnPasseTile = this.state.boardState[this.moveFromTo.toColumn][this.moveFromTo.fromRow];
+      const toEnPasseTile = this.boardState[this.moveFromTo.toColumn][this.moveFromTo.fromRow];
       if (toEnPasseTile.isWhite !== this.fromTile.isWhite && toEnPasseTile.piece === pieces.PAWN) {
         // FIXME if the last move was happened with a double move with that pawn
-        const lastMove = this.state.moveHistory[this.state.moveHistory.length - 1];
+        const lastMove = this.moveHistory[this.moveHistory.length - 1];
         if (
           // Was the last move from the opponent Pawn?
           lastMove.toColumn === this.moveFromTo.toColumn &&
@@ -200,6 +221,43 @@ class ValidMoveChecker {
   }
 
   isKingValidMove(): boolean {
+    // Castling
+    if (
+      Math.abs(this.moveFromTo.fromColumn - this.moveFromTo.toColumn) === 2 &&
+      this.moveFromTo.fromRow - this.moveFromTo.toRow === 0 &&
+      (this.fromTile.isWhite ? this.moveFromTo.fromRow === 0 : this.moveFromTo.fromRow === 7) &&
+      this.moveFromTo.fromColumn === 4
+    ) {
+      var moveIndexOffset = this.fromTile.isWhite ? 0 : 1;
+      var columnRook = this.moveFromTo.fromColumn - this.moveFromTo.toColumn === 2 ? 0 : 7;
+      var rowRook = this.moveFromTo.fromRow;
+      // If the rook is not in it's starting position can't castle
+      if (this.boardState[columnRook][rowRook].piece !== pieces.ROOK) {
+        return false;
+      }
+      for (var i = moveIndexOffset; i < this.moveHistory.length; i += 2) {
+        // If the king moved at any time, can't castle
+        if (
+          this.moveFromTo.fromColumn === this.moveHistory[i].fromColumn &&
+          this.moveFromTo.toColumn === this.moveHistory[i].toColumn
+        ) {
+          return false;
+        }
+        // If the targeted rook moved at any time, can't castle
+        if (columnRook === this.moveHistory[i].fromColumn && rowRook === this.moveHistory[i].fromRow) {
+          return false;
+        }
+      }
+      // If there are pieces in the way, can't castle
+      if (this.isContinousMoveValid({ isPawnForward: false, isKingCastling: true })) {
+        this.createCommonNewBoardState();
+        this.newBoardState[columnRook][rowRook].piece = '';
+        this.newBoardState[(this.moveFromTo.fromColumn + this.moveFromTo.toColumn) / 2][rowRook].piece = pieces.ROOK;
+        return true;
+      }
+      return false;
+    }
+
     if (
       Math.abs(this.moveFromTo.fromColumn - this.moveFromTo.toColumn) > 1 ||
       Math.abs(this.moveFromTo.fromRow - this.moveFromTo.toRow) > 1
@@ -209,14 +267,16 @@ class ValidMoveChecker {
     return this.isQueenValidMove();
   }
 
-  isContinousMoveValid(isPawnForward?: boolean): boolean {
+  isContinousMoveValid(
+    { isPawnForward, isKingCastling }: IsContinousMoveValidParam = { isPawnForward: false, isKingCastling: false }
+  ): boolean {
     var speedColumn = -Math.sign(this.moveFromTo.fromColumn - this.moveFromTo.toColumn);
     var speedRow = -Math.sign(this.moveFromTo.fromRow - this.moveFromTo.toRow);
     var curColumn = this.moveFromTo.fromColumn + speedColumn;
     var curRow = this.moveFromTo.fromRow + speedRow;
     var valid = true;
     while (curColumn !== this.moveFromTo.toColumn || curRow !== this.moveFromTo.toRow) {
-      if (this.state.boardState[curColumn][curRow].piece !== '') {
+      if (this.boardState[curColumn][curRow].piece !== '') {
         valid = false;
         return false;
         // break;
@@ -224,12 +284,14 @@ class ValidMoveChecker {
       curColumn += speedColumn;
       curRow += speedRow;
     }
-
-    return this.isDestinationValid(isPawnForward);
+    if (!isKingCastling) {
+      return this.isDestinationValid(isPawnForward);
+    }
+    return true;
   }
 
   isDestinationValid(isPawnForward?: boolean): boolean {
-    const toTile = this.state.boardState[this.moveFromTo.toColumn][this.moveFromTo.toRow];
+    const toTile = this.boardState[this.moveFromTo.toColumn][this.moveFromTo.toRow];
     if (toTile.piece !== '' && (isPawnForward || toTile.isWhite === this.fromTile.isWhite)) {
       return false;
     }
@@ -237,7 +299,7 @@ class ValidMoveChecker {
   }
 
   createCommonNewBoardState() {
-    var boardState = { ...this.state.boardState };
+    var boardState = { ...this.boardState };
     var { fromColumn, fromRow, toColumn, toRow } = this.moveFromTo;
     boardState[toColumn][toRow] = { ...boardState[fromColumn][fromRow] };
     boardState[fromColumn][fromRow].piece = '';
