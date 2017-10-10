@@ -76,6 +76,7 @@ class ValidMoveChecker {
       default:
         break;
     }
+
     if (this.valid) {
       return { valid: this.valid, boardState: this.newBoardState };
     } else {
@@ -200,7 +201,7 @@ class ValidMoveChecker {
 
   isKingValidMove(): boolean {
     if (
-      Math.abs(this.moveFromTo.fromColumn - this.moveFromTo.toColumn) > 1 &&
+      Math.abs(this.moveFromTo.fromColumn - this.moveFromTo.toColumn) > 1 ||
       Math.abs(this.moveFromTo.fromRow - this.moveFromTo.toRow) > 1
     ) {
       return false;
