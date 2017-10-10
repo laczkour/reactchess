@@ -41,7 +41,7 @@ interface IsContinousMoveValidParam {
   isPawnForward: boolean;
   isKingCastling: boolean;
 }
-interface ValidMoveCheckerProps {
+export interface ValidMoveCheckerProps {
   boardState: BoardState;
   moveFromTo: actions.MoveFromTo;
   isWhiteNext: boolean;
@@ -95,7 +95,7 @@ export class ValidMoveChecker {
         break;
 
       default:
-        break;
+        this.valid = false;
     }
 
     if (this.valid) {
@@ -274,10 +274,8 @@ export class ValidMoveChecker {
     var speedRow = -Math.sign(this.moveFromTo.fromRow - this.moveFromTo.toRow);
     var curColumn = this.moveFromTo.fromColumn + speedColumn;
     var curRow = this.moveFromTo.fromRow + speedRow;
-    var valid = true;
     while (curColumn !== this.moveFromTo.toColumn || curRow !== this.moveFromTo.toRow) {
       if (this.boardState[curColumn][curRow].piece !== '') {
-        valid = false;
         return false;
         // break;
       }
@@ -299,10 +297,18 @@ export class ValidMoveChecker {
   }
 
   createCommonNewBoardState() {
-    var boardState = { ...this.boardState };
+    var boardState = JSON.parse(JSON.stringify(this.boardState));
     var { fromColumn, fromRow, toColumn, toRow } = this.moveFromTo;
     boardState[toColumn][toRow] = { ...boardState[fromColumn][fromRow] };
-    boardState[fromColumn][fromRow].piece = '';
+    boardState[fromColumn][fromRow] = { isWhite: false, piece: '' };
     this.newBoardState = boardState;
   }
 }
+
+// function immutablyChange(obj, keys: string | number[], newValue) {
+//   var curr = obj;
+//   keys.slice(0, keys.length - 2).forEach(element => {
+//     curr[element] = { ...curr[element] };
+//   });
+//   curr[keys[keys.length - 1]] = newValue;
+// }
